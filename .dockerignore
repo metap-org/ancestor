@@ -1,0 +1,19 @@
+# Root-level .dockerignore for `metap-org` itself (first one — every other .dockerignore in this
+# flat multi-repo directory belongs to 1 repo and only applies when that repo is its own build
+# context). Needed because `metap-demo-waf/data-plane/web/Dockerfile` is the first build in this
+# whole org whose context has to be the metap-org ROOT, not 1 repo — it needs `design-system/` and
+# `platform-ui/` visible alongside `metap-demo-waf/` to resolve their `link:../design-system`/
+# `link:../../../design-system` pnpm dependencies (see that Dockerfile's own top comment). Without
+# this file, that build's context would include every sibling repo's `target/`/`node_modules/`
+# wholesale — verified live (2026-09-01) at ~49GB combined across just the 4 Rust repos' `target/`
+# alone, before counting `node_modules/`. Only read for a build whose context is this directory;
+# does not affect `metap/docker-compose.yml`, `metap-demo-crm/Dockerfile`, etc., which all build
+# from their own repo as context and read that repo's own `.dockerignore` instead.
+**/target
+/.shared-target
+**/node_modules
+**/.git
+**/.env
+**/dist
+**/.DS_Store
+**/keys/*.pem

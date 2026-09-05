@@ -1,0 +1,21 @@
+# Shared build/cache directories used by the sibling repos (see CLAUDE.md) — never belong in
+# this root repo's own history, regardless of size.
+.shared-target/
+.pnpm-store/
+node_modules/
+target/
+
+# Local env/secrets a dev might drop at the root when running docker-compose.dev.base.yml.
+.env
+.env.*
+!.env.example
+
+# Claude Code's own local session state — machine-specific, never shared.
+.claude/
+
+# Local-only git repos with no GitHub remote yet (see CLAUDE.md's "Submodules" section) — not
+# submodules here until they get one. Remove these two lines once they do.
+/metap-demo-crm/
+/metap-demo-jira/
+
+dev/

@@ -1,0 +1,21 @@
+[submodule "metap"]
+	path = metap
+	url = git@github.com:metap-org/metap.git
+[submodule "metap-docs"]
+	path = metap-docs
+	url = git@github.com:metap-org/metap-docs.git
+[submodule "metap-lowcode"]
+	path = metap-lowcode
+	url = git@github.com:metap-org/metap-lowcode.git
+[submodule "metap-demo-waf"]
+	path = metap-demo-waf
+	url = git@github.com:metap-org/metap-demo-waf.git
+[submodule "metap-themes"]
+	path = metap-themes
+	url = git@github.com:metap-org/metap-themes.git
+[submodule "design-system"]
+	path = design-system
+	url = git@github.com:metap-org/design-system.git
+[submodule "platform-ui"]
+	path = platform-ui
+	url = git@github.com:metap-org/platform-ui.git

@@ -1,0 +1,55 @@
+# docker-compose.dev.base.yml (metap-org root) — shared build/volume/network template for every
+# per-repo hot-reload dev compose file (metap-demo-crm/docker-compose.dev.yml,
+# metap-demo-jira/docker-compose.dev.yml, metap-demo-waf/data-plane/docker-compose.dev.yml). Not
+# meant to be `up`'d directly — its services (`rust-dev`, `web-dev`) exist only so each per-repo
+# file can `extends:` them. A plain YAML anchor (`&x-rust-dev` / `<<: *x-rust-dev`) only works
+# within 1 file; `extends:` is Compose's equivalent across separate files.
+#
+# `context`/the bind-mount `source` below (`.`) resolve relative to THIS file's own location
+# (metap-org root), regardless of which per-repo file does the `extends:` — verified via `docker
+# compose config` from each of the 3 per-repo files. That's exactly what's wanted: every service
+# gets the metap-org root mounted at /workspace and built from ./Dockerfile.dev, no matter how
+# deep the extending file sits (metap-demo-crm/ is 1 level down, metap-demo-waf/data-plane/ is 2).
+services:
+  rust-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    # The whole metap-org root, bind-mounted read-write at the SAME relative layout every repo's
+    # own `.cargo/config.toml`/`Cargo.toml` path dependencies already expect (`../.shared-target`,
+    # `../metap/crates/*`, ...) — the only way both resolve correctly inside the container exactly
+    # like they already do on the host.
+    volumes:
+      - .:/workspace
+      - metap-cargo-registry-dev:/usr/local/cargo/registry
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # Node/pnpm equivalent of `rust-dev` above, for a frontend `web` app's own Vite dev server
+  # (hot-reload is already near-instant there — this exists for the "1 command starts everything,
+  # no Node installed on the host" convenience, not because Vite itself needed help). Normal
+  # bridge networking + port-mapped `ports:` (set by the extending service) — the app's own
+  # dev-server proxy config must read its upstream targets from env vars (not hardcode
+  # `http://localhost:<port>`) for this to reach sibling containers by service DNS name; see
+  # `metap-demo-waf/data-plane/web/vite.config.ts`'s `ZONES_URL`/etc. for the pattern.
+  web-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev-web
+    # `CI=true` — pnpm's own convention for "don't prompt interactively" (found live 2026-09-03:
+    # without it, `pnpm install` against a `node_modules/` it didn't create itself — e.g. one
+    # already there from running `pnpm install` on the host — aborts with
+    # `ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY` instead of just reinstalling, since `docker
+    # compose up` gives the container no TTY to prompt on).
+    environment:
+      CI: "true"
+    volumes:
+      - .:/workspace
+
+# Known caveat (applies to every service extending `rust-dev`): the container runs as root (no
+# `user:` mapping, to keep this simple) — files it writes into the bind-mounted `.shared-target`
+# end up root-owned on the host. Harmless for Docker-only use; if a subsequent HOST-side `cargo
+# build` in the same tree then fails on permissions, `sudo chown -R $(id -u):$(id -g)
+# metap-org/.shared-target` once, or see root CLAUDE.md's `cargo clean` guidance.
+volumes:
+  metap-cargo-registry-dev:

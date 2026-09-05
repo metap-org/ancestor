@@ -1,0 +1,30 @@
+# Dockerfile.dev (metap-org root) — build once, shared by every service across the per-repo
+# `docker-compose.dev.yml` files (metap-demo-crm/, metap-demo-jira/, metap-demo-waf/data-plane/)
+# via `docker-compose.dev.base.yml`'s `rust-dev` template (see that file's top comment for the
+# full rationale). Deliberately does NOT COPY any source or run `cargo build`/`cargo run` — those
+# compose files bind-mount the real source (and the shared `.shared-target` build cache each
+# repo's own `.cargo/config.toml` already points at) into the container at runtime instead, so
+# this image only needs to provide the Rust toolchain + `cargo-watch`. Same base image
+# (`rust:1-slim-bookworm`) every repo's own production `Dockerfile` already uses, so there's no
+# new "does this even compile in this image" surprise beyond what's already proven to work.
+#
+# Caveat: this image's `rustc` version can drift from whatever's installed on the host (both
+# track "latest stable" independently, at different times) — when they differ, cargo's
+# fingerprint treats the shared-target cache as stale for whichever side built least recently and
+# recompiles, still correct, just not instant on the first run after a drift.
+#
+# `mold` installed here too, matching every repo's own `.cargo/config.toml` (`-C
+# link-arg=-fuse-ld=mold`, see that file's comment) — that rustflag applies inside this container
+# the same as on the host, so the linker it names must actually exist here. Missing this caused a
+# real failure live (2026-09-03): every build script link step failed with `collect2: fatal
+# error: cannot find 'ld'` (gcc's opaque error when `-fuse-ld=mold` names a linker that isn't on
+# PATH) until this line was added.
+# `curl` (2026-09-03) — needed by the per-repo compose files' `healthcheck:` blocks (`curl -f
+# http://127.0.0.1:<port>/health`), the same tool the demo repos' own production Dockerfiles'
+# healthchecks already assume, not a new choice.
+FROM rust:1-slim-bookworm
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends mold curl \
+    && rm -rf /var/lib/apt/lists/*
+RUN cargo install cargo-watch --locked
+WORKDIR /workspace

@@ -1,0 +1,13 @@
+# Dockerfile.dev-web (metap-org root) — build once, shared by every frontend dev service across
+# the per-repo `docker-compose.dev.yml` files (currently just `metap-demo-waf/data-plane`'s
+# `web`) via `docker-compose.dev.base.yml`'s `web-dev` template. Same philosophy as
+# `Dockerfile.dev` (the Rust equivalent): no source COPY, no `pnpm install` baked in — the
+# compose file bind-mounts real source and runs `pnpm install`/`pnpm dev` at container start, so
+# this image only provides the Node + pnpm toolchain.
+#
+# pnpm pinned to `pnpm@11` — matching the version pin this app's own production `web/Dockerfile`
+# already uses (see that file's own comment for why: `pnpm@9` resolves to an old 9.x that fails
+# `pnpm build` in `design-system` against its `pnpm-workspace.yaml`).
+FROM node:22-slim
+RUN npm install -g pnpm@11
+WORKDIR /workspace
