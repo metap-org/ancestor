@@ -140,9 +140,18 @@ found.
   parsing, env-var helpers, the `{"error":{"code":...}}` axum response shape) meant to be reused the
   same way by any Rust repo here that needs it, not just `metap`'s own binaries — check there before
   hand-rolling something it already has (`metap-lowcode`'s crates already depend on it).
-- `metap-demo-crm` and `metap-demo-jira` intentionally demonstrate two different tenancy models
-  side by side: shared-schema (`crm`, generic `records` table) vs. dedicated-DB + table-per-entity
-  (`jira`). Don't assume one app's data-access pattern generalizes to the other.
+- `metap-demo-crm` and `metap-demo-jira` intentionally demonstrate two different **tenancy
+  strategies** side by side: `Schema` (`crm`, one shared `public` schema/pool) vs. `DedicatedDb`
+  (`jira`, one database per tenant). Don't assume one app's data-access pattern generalizes to the
+  other. **The separate "generic `records` table vs. table-per-entity" axis this bullet used to
+  conflate with tenancy strategy no longer distinguishes the two apps** (2026-09-07): every entity
+  in both `metap-demo-crm` (code-authored *and* low-code) and `metap-demo-jira` is now on a
+  dedicated table — see `metap-demo-crm/docs/roadmap/46-lowcode-entities-table-per-entity.md` and
+  `metap-lowcode`'s `LowCodeEntityDefinition` (no longer defaults new entities to `records`
+  either). The generic `records` table itself still exists and is still fully supported by `metap`
+  core (`metap-demo-waf` uses it for nothing now either, having migrated its own 9 entities the
+  same session) — removing that support entirely from `metap` core is a distinct, not-yet-scheduled
+  future direction, not something this update did.
 - Ports are deliberately staggered so demo apps can run side by side: `metap-demo-crm` backend
   :3000 / frontend :5173, `metap-demo-jira` backend :3100 / frontend :5174.
 - **`metap` and `metap-lowcode` deliberately disagree on monolith vs. microservices** — this is
