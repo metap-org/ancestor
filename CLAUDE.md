@@ -51,13 +51,21 @@ what it changes, not restate everything from here.
 metap/            Rust backend core — metadata-driven CRUD/permission/workflow platform library
 metap-docs/       Design docs, roadmap, feature briefs, ADRs for `metap` (docs-only repo)
 metap-lowcode/    SaaS low-code control-plane layer on top of `metap` (entity builder, tenant provisioning API)
-metap-demo-crm/   Downstream example app #1: CRM (shared-schema tenant, generic `records` table)
+metap-demo-crm/   DEPRECATED 2026-09-11 — no longer demoed/developed (chủ dự án chưa nắm nghiệp vụ CRM). Was downstream example app #1: CRM (shared-schema tenant, generic `records` table)
 metap-demo-jira/  Downstream example app #2: Jira-like (dedicated-DB tenant, table-per-entity, kanban board)
 metap-demo-waf/   Downstream product: WAAP/Cloudflare-style portal — data-plane + control-plane + edge-plane, see its own CLAUDE.md
 design-system/    `@metap/ui` — Tailwind + Radix + shadcn-style component library (the design-system layer)
 platform-ui/      `@metap/platform-ui` — generic list/form/detail/workflow admin UI, built on `@metap/ui`
 metap-themes/     Theme packages (enterprise/fintech/saas/storefront/creative) built on top of `@metap/ui`
 ```
+
+**`metap-demo-crm` deprecated (2026-09-11)**: chủ dự án dừng demo và phát triển tiếp app này —
+chưa nắm nghiệp vụ CRM đủ để dẫn dắt việc mở rộng nó. Repo vẫn còn trên đĩa (build/test cũ vẫn
+chạy được, không xoá) nhưng đừng dùng nó làm ví dụ/demo cho việc mới — dùng `metap-demo-jira` hoặc
+`metap-demo-waf` thay thế khi cần một downstream app thật để minh hoạ/verify. Không rewrite các
+mục lịch sử (`docs/roadmap/`, các bullet kỹ thuật đã ghi trong `metap/CLAUDE.md` dẫn chứng bug tìm
+qua `metap-demo-crm`) — chúng vẫn đúng về mặt lịch sử, chỉ là repo này không còn là nơi làm việc
+tiếp.
 
 Everything is wired together via sibling-relative paths, not package versions:
 - Rust repos depend on `../metap/crates/*` (and, for `metap-demo-crm`, also `../metap-lowcode`'s
@@ -83,7 +91,7 @@ its own tooling:
 | Task | Go to |
 |---|---|
 | Backend platform primitives (CRUD, permission, workflow, query, outbox, reconciler) | `metap/` — `cargo build --workspace` / `cargo test --workspace` from its root |
-| Run something end-to-end (mint a token, migrate a DB, serve HTTP) | `metap-demo-crm/`, `metap-demo-jira/`, or `metap-demo-waf/data-plane/` — each has its own README with the full local-run recipe |
+| Run something end-to-end (mint a token, migrate a DB, serve HTTP) | `metap-demo-jira/` or `metap-demo-waf/data-plane/` — each has its own README with the full local-run recipe (`metap-demo-crm/` deprecated, see note below the repo table — don't pick it for new work) |
 | Low-code entity builder / self-service tenant provisioning HTTP API | `metap-lowcode/` — `cargo build --workspace` / `cargo test --workspace` |
 | Shared UI atoms/primitives (Button, Dialog, Table, form controls...) | `design-system/` — `pnpm install && pnpm test` / `pnpm storybook` |
 | Generic admin screens (list/detail/form/workflow, permission UI) composed from those atoms | `platform-ui/` — `pnpm typecheck && pnpm lint && pnpm format:check` (no build step of its own; consumed straight from `src/` by whichever app's Vite bundler) |
