@@ -19,3 +19,6 @@
 [submodule "platform-ui"]
 	path = platform-ui
 	url = git@github.com:metap-org/platform-ui.git
+[submodule "metap-control-plane-web"]
+	path = metap-control-plane-web
+	url = git@github.com:metap-org/metap-control-plane-web.git
