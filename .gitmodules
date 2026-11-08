@@ -7,9 +7,9 @@
 [submodule "metap-lowcode"]
 	path = metap-lowcode
 	url = git@github.com:metap-org/metap-lowcode.git
-[submodule "metap-demo-waf"]
-	path = metap-demo-waf
-	url = git@github.com:metap-org/metap-demo-waf.git
+[submodule "waap"]
+	path = waap
+	url = git@github.com:metap-org/waap.git
 [submodule "metap-themes"]
 	path = metap-themes
 	url = git@github.com:metap-org/metap-themes.git
