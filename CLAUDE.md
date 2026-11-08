@@ -53,7 +53,7 @@ metap-docs/       Design docs, roadmap, feature briefs, ADRs for `metap` (docs-o
 metap-lowcode/    SaaS low-code control-plane layer on top of `metap` (entity builder, tenant provisioning API)
 metap-demo-crm/   DEPRECATED 2026-09-11 — no longer demoed/developed (chủ dự án chưa nắm nghiệp vụ CRM). Was downstream example app #1: CRM (shared-schema tenant, generic `records` table)
 metap-demo-jira/  Downstream example app #2: Jira-like (dedicated-DB tenant, table-per-entity, kanban board)
-metap-demo-waf/   Downstream product: WAAP/Cloudflare-style portal — data-plane + control-plane + edge-plane, see its own CLAUDE.md
+waap/            Downstream product (was `metap-demo-waf`): WAAP/Cloudflare-style portal — management-plane + control-plane + edge-plane (+ analytics-plane), see its own CLAUDE.md
 design-system/    `@metap/ui` — Tailwind + Radix + shadcn-style component library (the design-system layer)
 platform-ui/      `@metap/platform-ui` — generic list/form/detail/workflow admin UI, built on `@metap/ui`
 metap-themes/     Theme packages (enterprise/fintech/saas/storefront/creative) built on top of `@metap/ui`
@@ -91,7 +91,7 @@ its own tooling:
 | Task | Go to |
 |---|---|
 | Backend platform primitives (CRUD, permission, workflow, query, outbox, reconciler) | `metap/` — `cargo build --workspace` / `cargo test --workspace` from its root |
-| Run something end-to-end (mint a token, migrate a DB, serve HTTP) | `metap-demo-jira/` or `metap-demo-waf/data-plane/` — each has its own README with the full local-run recipe (`metap-demo-crm/` deprecated, see note below the repo table — don't pick it for new work) |
+| Run something end-to-end (mint a token, migrate a DB, serve HTTP) | `metap-demo-jira/` or `waap/management-plane/` — each has its own README with the full local-run recipe (`metap-demo-crm/` deprecated, see note below the repo table — don't pick it for new work) |
 | Low-code entity builder / self-service tenant provisioning HTTP API | `metap-lowcode/` — `cargo build --workspace` / `cargo test --workspace` |
 | Shared UI atoms/primitives (Button, Dialog, Table, form controls...) | `design-system/` — `pnpm install && pnpm test` / `pnpm storybook` |
 | Generic admin screens (list/detail/form/workflow, permission UI) composed from those atoms | `platform-ui/` — `pnpm typecheck && pnpm lint && pnpm format:check` (no build step of its own; consumed straight from `src/` by whichever app's Vite bundler) |
@@ -104,7 +104,7 @@ design-system (@metap/ui)         — pure UI atoms, Tailwind + Radix, no busine
         ↑ composed by
 platform-ui (@metap/platform-ui)  — generic business screens (list/detail/form/workflow), no backend coupling
         ↑ consumed by
-metap-demo-crm/web, metap-demo-jira/web, metap-demo-waf/data-plane/web
+metap-demo-crm/web, metap-demo-jira/web, waap/management-plane/web
         ↕ HTTP (REST/GraphQL/gRPC)
 metap-demo-* / metap-demo-waf backend binaries
         ↑ built on

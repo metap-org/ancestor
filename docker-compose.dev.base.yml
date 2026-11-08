@@ -1,6 +1,6 @@
 # docker-compose.dev.base.yml (metap-org root) — shared build/volume/network template for every
 # per-repo hot-reload dev compose file (metap-demo-crm/docker-compose.dev.yml,
-# metap-demo-jira/docker-compose.dev.yml, metap-demo-waf/data-plane/docker-compose.dev.yml). Not
+# metap-demo-jira/docker-compose.dev.yml, waap/management-plane/docker-compose.dev.yml). Not
 # meant to be `up`'d directly — its services (`rust-dev`, `web-dev`) exist only so each per-repo
 # file can `extends:` them. A plain YAML anchor (`&x-rust-dev` / `<<: *x-rust-dev`) only works
 # within 1 file; `extends:` is Compose's equivalent across separate files.
@@ -9,7 +9,7 @@
 # (metap-org root), regardless of which per-repo file does the `extends:` — verified via `docker
 # compose config` from each of the 3 per-repo files. That's exactly what's wanted: every service
 # gets the metap-org root mounted at /workspace and built from ./Dockerfile.dev, no matter how
-# deep the extending file sits (metap-demo-crm/ is 1 level down, metap-demo-waf/data-plane/ is 2).
+# deep the extending file sits (metap-demo-crm/ is 1 level down, waap/management-plane/ is 2).
 services:
   rust-dev:
     build:
@@ -31,7 +31,7 @@ services:
   # bridge networking + port-mapped `ports:` (set by the extending service) — the app's own
   # dev-server proxy config must read its upstream targets from env vars (not hardcode
   # `http://localhost:<port>`) for this to reach sibling containers by service DNS name; see
-  # `metap-demo-waf/data-plane/web/vite.config.ts`'s `ZONES_URL`/etc. for the pattern.
+  # `waap/management-plane/web/vite.config.ts`'s `ZONES_URL`/etc. for the pattern.
   web-dev:
     build:
       context: .
