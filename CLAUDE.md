@@ -105,7 +105,7 @@ design-system (@metap/ui)         — pure UI atoms, Tailwind + Radix, no busine
 platform-ui (@metap/platform-ui)  — generic business screens (list/detail/form/workflow), no backend coupling
         ↑ consumed by
 metap-demo-crm/web, metap-demo-jira/web, waap/management-plane/web
-        ↕ HTTP (REST/GraphQL/gRPC)
+        ↕ HTTP (REST/JSON only — GraphQL and gRPC removed 2026-11-21, roadmap 116)
 metap-demo-* / metap-demo-waf backend binaries
         ↑ built on
 metap (crates/metap-*)            — entity-agnostic core: metadata, permission, query, workflow, outbox
